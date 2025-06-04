@@ -3,7 +3,7 @@ using static Disaster_Prediction_And_Alert_System_API.Const.Enums;
 
 namespace Disaster_Prediction_And_Alert_System_API.Model
 {
-    public class RegionInfo
+    public class RegionInfo : BaseInfo
     {
         [Required]
         public required string Name { get; set; }
@@ -13,8 +13,5 @@ namespace Disaster_Prediction_And_Alert_System_API.Model
 
         [Required]
         public double Longitude { get; set; }
-
-        public required List<DisasterType> DisasterTypes { get; set; }
     }
-
 }

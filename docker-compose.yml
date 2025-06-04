@@ -1,0 +1,39 @@
+﻿version: '3.9'
+
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"  # map port 80 ใน container ไป 5000 ที่ host
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:80"
+      ConnectionStrings__DbConnection: "Server=db;Database=TestDb;User Id=sa;Password=Test1234;TrustServerCertificate=True;MultipleActiveResultSets=True;"
+      Redis__ConnectionString: "redis:6379,abortConnect=false"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      MSSQL_DATABASE: "TestDb"
+      SA_PASSWORD: "Test1234"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+  redis:
+    image: redis:6.0-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  sqlserver-data:
+  redis-data:

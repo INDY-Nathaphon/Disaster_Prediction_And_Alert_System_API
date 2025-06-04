@@ -2,11 +2,12 @@
 
 namespace Disaster_Prediction_And_Alert_System_API.Model
 {
-    public class AlertSettingInfo : BaseInfo
+    public class DisasterRiskReportInfo : BaseInfo
     {
         public long RegionId { get; set; }
         public Enums.DisasterType DisasterType { get; set; }
-        public double ThresholdScore { get; set; }
-        public required string Message { get; set; }
+        public double RiskScore { get; set; }
+        public required string RiskLevel { get; set; }
+        public bool AlertTriggered { get; set; }
     }
 }

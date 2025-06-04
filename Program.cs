@@ -1,14 +1,32 @@
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.DisasterPredictionAndAlert.Interface;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.DisasterPredictionAndAlert.Service;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.ExternalApi;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.RedisCache;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.TransactionManager;
+﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.ExternalApi;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCache;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.TransactionManager;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterPredictionAndAlert.Interface;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterPredictionAndAlert.Service;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Faacade;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Service;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Facade;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Service;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Facade;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Service;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler;
 using Disaster_Prediction_And_Alert_System_API.Domain;
 using Disaster_Prediction_And_Alert_System_API.Middleware;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ตรวจสอบว่า builder.Configuration มีค่าไหม
+if (builder.Configuration == null)
+{
+    throw new Exception("Configuration is null");
+}
 
 // Add services to the container.
 
@@ -46,13 +64,45 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddScoped<ITransactionManagerService, TransactionManagerService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<DbContext, AppDBContext>();
-builder.Services.AddScoped<IDisasterPredictionAndAlertFacadeService, DisasterPredictionAndAlertFacadeService>();
-builder.Services.AddScoped<IDisasterPredictionAndAlertService, DisasterPredictionAndAlertService>();
+
+builder.Services.AddScoped<IAlertSettingFacadeService, AlertSettingFacadeService>();
+builder.Services.AddScoped<IAlertSettingService, AlertSettingService>();
+
+builder.Services.AddScoped<IUserFacadeService, UserFacadeService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IDisasterRiskReportFacadeService, DisasterRiskReportFacadeService>();
+builder.Services.AddScoped<IDisasterRiskReportService, DisasterRiskReportService>();
+
+builder.Services.AddScoped<IRegionFacadeService, RegionFacadeService>();
+builder.Services.AddScoped<IRegionService, RegionService>();
+
 builder.Services.AddScoped<IExternalApiService, ExternalApiService>();
 
 #endregion
 
+#region Job
+
+builder.Services.AddHostedService<SmsJobService>();
+builder.Services.AddHostedService<AlertJobService>();
+
+#endregion
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+
+    var policy = Policy
+    .Handle<SqlException>()
+    .WaitAndRetry(5, retryAttempt => TimeSpan.FromSeconds(5));
+
+    policy.Execute(() =>
+    {
+        db.Database.Migrate();
+    });
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -60,7 +110,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 

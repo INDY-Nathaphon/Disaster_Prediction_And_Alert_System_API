@@ -1,6 +1,6 @@
-﻿namespace Disaster_Prediction_And_Alert_System_API.Domain.Entities
+﻿namespace Disaster_Prediction_And_Alert_System_API.Model
 {
-    public class User : BaseEntity
+    public class UserInfo : BaseInfo
     {
         public required string Name { get; set; }
         public string? Email { get; set; }
