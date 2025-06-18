@@ -1,5 +1,4 @@
-﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Faacade;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
+﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler
 {
@@ -18,8 +17,6 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler
             {
                 try
                 {
-                    Console.WriteLine($"CreateDisasterRiskReport Job run at: {DateTime.Now}");
-
                     using var scope = _scopeFactory.CreateScope();
                     var disasterRiskReportFacadeService = scope.ServiceProvider.GetRequiredService<IDisasterRiskReportFacadeService>();
 

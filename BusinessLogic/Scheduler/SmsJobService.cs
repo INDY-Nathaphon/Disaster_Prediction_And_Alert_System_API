@@ -19,8 +19,6 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler
                 {
                     try
                     {
-                        Console.WriteLine($"SendDisasterRiskReport Job run at: {DateTime.Now}");
-
                         using var scope = _scopeFactory.CreateScope();
                         var disasterRiskReportFacadeService = scope.ServiceProvider.GetRequiredService<IDisasterRiskReportFacadeService>();
 

@@ -10,9 +10,7 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
     {
         IAlertSettingFacadeService _alertSettingFacadeService;
 
-        public AlertSettingController(
-            IAlertSettingFacadeService alertSettingFacadeService
-            )
+        public AlertSettingController(IAlertSettingFacadeService alertSettingFacadeService)
         {
             _alertSettingFacadeService = alertSettingFacadeService;
         }
@@ -20,42 +18,71 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<AlertSettingInfo>>> GetAll()
         {
-            var products = await _alertSettingFacadeService.GetAll();
-            return Ok(products);
+            try
+            {
+                var result = await _alertSettingFacadeService.GetAll();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<AlertSettingInfo>> GetById(long id)
         {
-            var product = await _alertSettingFacadeService.GetById(id);
-            if (product == null)
-                return NotFound();
-
-            return Ok(product);
+            try
+            {
+                var result = await _alertSettingFacadeService.GetById(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPost]
         public async Task<ActionResult<AlertSettingInfo>> Create([FromBody] AlertSettingInfo info)
         {
-            var created = await _alertSettingFacadeService.Create(info);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            try
+            {
+                var created = await _alertSettingFacadeService.Create(info);
+                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<AlertSettingInfo>> Update(long id, [FromBody] AlertSettingInfo info)
         {
-            var updated = await _alertSettingFacadeService.Update(id, info);
-            if (updated == null)
-                return NotFound();
-
-            return Ok(updated);
+            try
+            {
+                var updated = await _alertSettingFacadeService.Update(id, info);
+                return Ok(updated);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
-            await _alertSettingFacadeService.Delete(id);
-            return NoContent();
+            try
+            {
+                await _alertSettingFacadeService.Delete(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
     }
 }
