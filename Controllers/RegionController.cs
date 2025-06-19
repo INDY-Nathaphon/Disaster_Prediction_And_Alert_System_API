@@ -1,4 +1,5 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
+using Disaster_Prediction_And_Alert_System_API.Domain.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Disaster_Prediction_And_Alert_System_API.Controllers
@@ -7,11 +8,13 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
     [ApiController]
     public class RegionController : ControllerBase
     {
-        IRegionFacadeService _regionFacadeService;
+        private readonly IRegionFacadeService _regionFacadeService;
+        private readonly ILogger<RegionController> _logger;
 
-        public RegionController(IRegionFacadeService regionFacadeService)
+        public RegionController(ILogger<RegionController> logger, IRegionFacadeService regionFacadeService)
         {
             _regionFacadeService = regionFacadeService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -24,7 +27,8 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -38,7 +42,8 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -52,7 +57,8 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -66,7 +72,8 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -80,7 +87,8 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
     }

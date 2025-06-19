@@ -8,7 +8,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCac
 
         public RedisCacheService(IConfiguration config)
         {
-            var connStr = config["Redis:ConnectionString"];
+            var connStr = config["Redis:ConnectionString"] ?? string.Empty;
             var redis = ConnectionMultiplexer.Connect(connStr);
             _db = redis.GetDatabase();
         }
@@ -19,12 +19,12 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCac
             await _db.StringSetAsync(key, value, TimeSpan.FromMinutes(15));
         }
 
-        public async Task<string?> GetAsync(string key)
+        public async Task<string> GetAsync(string key)
         {
             var value = await _db.StringGetAsync(key);
             if (value.IsNullOrEmpty)
             {
-                return null;
+                return string.Empty;
             }
             return value.ToString();
         }

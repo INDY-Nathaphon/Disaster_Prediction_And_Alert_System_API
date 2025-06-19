@@ -40,10 +40,12 @@ public class UnitOfWork : IUnitOfWork
 public class TransactionManagerService : ITransactionManagerService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<TransactionManagerService> _logger;
 
-    public TransactionManagerService(IUnitOfWork unitOfWork)
+    public TransactionManagerService(ILogger<TransactionManagerService> _logger, IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
+        this._logger = _logger;
     }
 
     public async Task<TResult> DoworkWithTransaction<TResult>(Func<Task<TResult>> operation)
@@ -58,6 +60,7 @@ public class TransactionManagerService : ITransactionManagerService
         catch (Exception ex)
         {
             await _unitOfWork.RollbackTransactionAsync();
+            _logger.LogError(ex.Message);
             throw;
         }
     }
@@ -69,6 +72,7 @@ public class TransactionManagerService : ITransactionManagerService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message);
             throw;
         }
     }
@@ -83,6 +87,7 @@ public class TransactionManagerService : ITransactionManagerService
         catch (Exception ex)
         {
             await _unitOfWork.RollbackTransactionAsync();
+            _logger.LogError(ex.Message);
             throw;
         }
     }
@@ -94,6 +99,7 @@ public class TransactionManagerService : ITransactionManagerService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message);
             throw;
         }
     }

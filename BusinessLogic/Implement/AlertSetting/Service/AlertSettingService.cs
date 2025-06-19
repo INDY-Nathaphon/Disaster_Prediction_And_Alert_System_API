@@ -1,6 +1,4 @@
-﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.ExternalApi;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCache;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterPredictionAndAlert.Interface;
+﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterPredictionAndAlert.Interface;
 using Disaster_Prediction_And_Alert_System_API.Domain;
 using Disaster_Prediction_And_Alert_System_API.Domain.Model;
 using Microsoft.EntityFrameworkCore;
@@ -10,14 +8,10 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
     public class AlertSettingService : IAlertSettingService
     {
         private readonly AppDBContext _db;
-        private readonly RedisCacheService _cache;
-        private readonly IExternalApiService _external;
 
-        public AlertSettingService(AppDBContext db, RedisCacheService cache, IExternalApiService external)
+        public AlertSettingService(AppDBContext db)
         {
             _db = db;
-            _cache = cache;
-            _external = external;
         }
 
         public async Task<AlertSettingInfo> GetById(long id)
