@@ -1,6 +1,6 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
 
-namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler
+namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Scheduler
 {
     public class SmsJobService : BackgroundService
     {

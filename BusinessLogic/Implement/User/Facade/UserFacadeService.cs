@@ -1,6 +1,6 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.TransactionManager;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
-using Disaster_Prediction_And_Alert_System_API.Model;
+using Disaster_Prediction_And_Alert_System_API.Domain.Model;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Facade
 {

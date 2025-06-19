@@ -1,4 +1,4 @@
-﻿namespace Disaster_Prediction_And_Alert_System_API.Model
+﻿namespace Disaster_Prediction_And_Alert_System_API.Domain.Model
 {
     public class UserInfo : BaseInfo
     {

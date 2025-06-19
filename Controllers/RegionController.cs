@@ -1,5 +1,4 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
-using Disaster_Prediction_And_Alert_System_API.Model;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Disaster_Prediction_And_Alert_System_API.Controllers

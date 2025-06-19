@@ -9,18 +9,31 @@ using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterR
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Facade;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Service;
+using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Scheduler;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Facade;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Service;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Scheduler;
 using Disaster_Prediction_And_Alert_System_API.Domain;
 using Disaster_Prediction_And_Alert_System_API.Middleware;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Polly;
+using Serilog;
 using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Add Serilog log
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithEnvironmentName()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog(Log.Logger);
+
+#endregion
 
 // ตรวจสอบว่า builder.Configuration มีค่าไหม
 if (builder.Configuration == null)
@@ -111,6 +124,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Serilog Middleware 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();

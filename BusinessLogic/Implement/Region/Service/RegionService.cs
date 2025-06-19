@@ -1,6 +1,6 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
 using Disaster_Prediction_And_Alert_System_API.Domain;
-using Disaster_Prediction_And_Alert_System_API.Model;
+using Disaster_Prediction_And_Alert_System_API.Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Service
