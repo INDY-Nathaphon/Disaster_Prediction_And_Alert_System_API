@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using System.ComponentModel.DataAnnotations;
 using static Disaster_Prediction_And_Alert_System_API.Const.Enums;
 
-namespace Disaster_Prediction_And_Alert_System_API.Domain.Model
+namespace Disaster_Prediction_And_Alert_System_API.Common.Model.Region
 {
     public class RegionInfo : BaseInfo
     {

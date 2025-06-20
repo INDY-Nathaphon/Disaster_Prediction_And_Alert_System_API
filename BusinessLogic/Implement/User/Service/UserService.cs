@@ -1,6 +1,11 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
+using Disaster_Prediction_And_Alert_System_API.Common.Constant;
+using Disaster_Prediction_And_Alert_System_API.Common.Extensions;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.User;
+using Disaster_Prediction_And_Alert_System_API.Common.Validation;
 using Disaster_Prediction_And_Alert_System_API.Domain;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
@@ -15,13 +20,13 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
             _db = db;
         }
 
-        public async Task<UserInfo> GetById(long id)
+        public async Task<UserInfo> GetEntityById(long id)
         {
             #region Validate
 
             if (id <= 0)
             {
-                throw new Exception("User id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "User id is invalid.");
             }
 
             #endregion
@@ -40,7 +45,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (userInfo == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             return userInfo;
@@ -52,7 +57,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (string.IsNullOrEmpty(mobileNo))
             {
-                throw new Exception("User mobileNo is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "User mobile number is required.");
             }
 
             #endregion
@@ -71,43 +76,42 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (userInfo == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             return userInfo;
         }
-        public async Task<List<UserInfo>> GetAll()
+        public async Task<PagedResult<UserInfo>> GetEntities(BaseFilter filter)
         {
-            var userInfos = await (from u in _db.Users
-                                   select new UserInfo
-                                   {
-                                       Id = u.Id,
-                                       Mobile = u.Mobile,
-                                       Email = u.Email,
-                                       Name = u.Name,
-                                       CreatedDate = u.CreatedDate,
-                                       UpdatedDate = u.UpdatedDate
-                                   }).ToListAsync();
+            FilterValidator.Validate(filter);
 
-            if (userInfos == null || userInfos.Count == 0)
-            {
-                throw new Exception("User not found.");
-            }
+            var userInfos = (from u in _db.Users
+                             select new UserInfo
+                             {
+                                 Id = u.Id,
+                                 Mobile = u.Mobile,
+                                 Email = u.Email,
+                                 Name = u.Name,
+                                 CreatedDate = u.CreatedDate,
+                                 UpdatedDate = u.UpdatedDate
+                             });
 
-            return userInfos;
+            var result = await userInfos.ToPagedResultAsync(filter);
+
+            return result;
         }
         public async Task<UserInfo> Create(UserInfo info)
         {
             if (info == null)
             {
-                throw new Exception("User info is null.");
+                throw new AppException(AppErrorCode.ValidationError, "User info is null.");
             }
 
             var currentExistingUser = await _db.Users.AnyAsync(u => u.Mobile == info.Mobile || u.Email == info.Email);
 
             if (currentExistingUser)
             {
-                throw new Exception("User already exists.");
+                throw new AppException(AppErrorCode.ValidationError, "User already exists.");
             }
 
             var currentDate = DateTime.UtcNow;
@@ -138,7 +142,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (result == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             return result;
@@ -149,12 +153,12 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (info == null)
             {
-                throw new Exception("User info is null.");
+                throw new AppException(AppErrorCode.ValidationError, "User info is null.");
             }
 
             if (id <= 0)
             {
-                throw new Exception("User id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "User id is invalid.");
             }
 
             #endregion
@@ -166,7 +170,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (userEntity == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             userEntity.Mobile = info.Mobile;
@@ -190,7 +194,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (result == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             return result;
@@ -201,7 +205,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (id <= 0)
             {
-                throw new Exception("User id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "User id is invalid.");
             }
 
             #endregion
@@ -213,7 +217,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
 
             if (userEntity == null)
             {
-                throw new Exception("User not found.");
+                throw new AppException(AppErrorCode.NotFound, "User not found.");
             }
 
             _db.Users.Remove(userEntity);
@@ -221,18 +225,20 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.
         }
 
         #region Private Methods
+
         public static void ValidateMobileNo(string mobileNo)
         {
             if (string.IsNullOrWhiteSpace(mobileNo))
             {
-                throw new Exception("User mobile number is required.");
+                throw new AppException(AppErrorCode.ValidationError, "User mobile number is required.");
             }
 
             if (!Regex.IsMatch(mobileNo, @"^(06|08|09)\d{8}$"))
             {
-                throw new Exception("User mobile number is invalid. It should start with 06, 08, or 09 and contain 10 digits.");
+                throw new AppException(AppErrorCode.ValidationError, "User mobile number will start with 06, 08 or 09.");
             }
         }
+
         #endregion
     }
 }

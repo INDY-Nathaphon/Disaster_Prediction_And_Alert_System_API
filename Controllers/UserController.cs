@@ -1,5 +1,7 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Common.ApiResponse;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Disaster_Prediction_And_Alert_System_API.Controllers
@@ -9,102 +11,52 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserFacadeService _userFacadeService;
-        private readonly ILogger<UserController> _logger;
 
-        public UserController(ILogger<UserController> logger, IUserFacadeService userFacadeService)
+        public UserController(IUserFacadeService userFacadeService)
         {
             _userFacadeService = userFacadeService;
-            _logger = logger;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AlertSettingInfo>>> GetAll()
+        public async Task<ActionResult<ApiResponse<PagedResult<UserInfo>>>> GetEntities([FromQuery] BaseFilter filter)
         {
-            try
-            {
-                var result = await _userFacadeService.GetAll();
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _userFacadeService.GetEntities(filter);
+            return Ok(ApiResponseFactory.Success(result));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AlertSettingInfo>> GetById(long id)
+        public async Task<ActionResult<ApiResponse<UserInfo>>> GetEntityById(long id)
         {
-            try
-            {
-                var result = await _userFacadeService.GetById(id);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _userFacadeService.GetEntityById(id);
+            return Ok(ApiResponseFactory.Success(result));
         }
 
         [HttpPost]
-        public async Task<ActionResult<AlertSettingInfo>> Create([FromBody] UserInfo info)
+        public async Task<ActionResult<ApiResponse<UserInfo>>> Create([FromBody] UserInfo info)
         {
-            try
-            {
-                var created = await _userFacadeService.Create(info);
-                return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _userFacadeService.Create(info);
+            return Ok(ApiResponseFactory.Success(result));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<AlertSettingInfo>> Update(long id, [FromBody] UserInfo info)
+        public async Task<ActionResult<ApiResponse<UserInfo>>> Update(long id, [FromBody] UserInfo info)
         {
-            try
-            {
-                var updated = await _userFacadeService.Update(id, info);
-                return Ok(updated);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _userFacadeService.Update(id, info);
+            return Ok(ApiResponseFactory.Success(result));
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id)
         {
-            try
-            {
-                await _userFacadeService.Delete(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            await _userFacadeService.Delete(id);
+            return NoContent();
         }
 
         [HttpGet("by-mobile")]
-        public async Task<ActionResult<UserInfo>> GetUserByMobileNo([FromQuery] string mobileNo)
+        public async Task<ActionResult<ApiResponse<UserInfo>>> GetUserByMobileNo([FromQuery] string mobileNo)
         {
-            try
-            {
-                var user = await _userFacadeService.GetUserByMobileNo(mobileNo);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Internal server error");
-            }
+            var result = await _userFacadeService.GetUserByMobileNo(mobileNo);
+            return Ok(ApiResponseFactory.Success(result));
         }
     }
 }

@@ -9,12 +9,12 @@ using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterR
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Facade;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Service;
-using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Scheduler;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Facade;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Interface;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.User.Service;
 using Disaster_Prediction_And_Alert_System_API.Domain;
 using Disaster_Prediction_And_Alert_System_API.Middleware;
+using Disaster_Prediction_And_Alert_System_API.Scheduler;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Polly;
@@ -125,6 +125,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Serilog Middleware 
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 app.UseHttpsRedirection();

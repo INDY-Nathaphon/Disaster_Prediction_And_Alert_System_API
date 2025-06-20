@@ -1,6 +1,11 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
+using Disaster_Prediction_And_Alert_System_API.Common.Constant;
+using Disaster_Prediction_And_Alert_System_API.Common.Extensions;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Region;
+using Disaster_Prediction_And_Alert_System_API.Common.Validation;
 using Disaster_Prediction_And_Alert_System_API.Domain;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Service
@@ -13,12 +18,11 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
         {
             _db = db;
         }
-
-        public async Task<RegionInfo> GetById(long id)
+        public async Task<RegionInfo> GetEntityById(long id)
         {
             if (id <= 0)
             {
-                throw new Exception("Region id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "Region id is invalid.");
             }
 
             var region = await (from r in _db.Regions
@@ -35,45 +39,44 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
 
             if (region == null)
             {
-                throw new Exception("Region not found.");
+                throw new AppException(AppErrorCode.NotFound, "Region not found.");
             }
 
             return region;
         }
 
-        public async Task<List<RegionInfo>> GetAll()
+        public async Task<PagedResult<RegionInfo>> GetEntities(BaseFilter filter)
         {
-            var regions = await (from r in _db.Regions
-                                 select new RegionInfo
-                                 {
-                                     Id = r.Id,
-                                     Name = r.Name,
-                                     Latitude = r.Latitude,
-                                     Longitude = r.Longitude,
-                                     CreatedDate = r.CreatedDate,
-                                     UpdatedDate = r.UpdatedDate
-                                 }).ToListAsync();
+            FilterValidator.Validate(filter);
 
-            if (regions == null || regions.Count == 0)
-            {
-                throw new Exception("No regions found.");
-            }
+            var query = (from r in _db.Regions
+                         select new RegionInfo
+                         {
+                             Id = r.Id,
+                             Name = r.Name,
+                             Latitude = r.Latitude,
+                             Longitude = r.Longitude,
+                             CreatedDate = r.CreatedDate,
+                             UpdatedDate = r.UpdatedDate
+                         });
 
-            return regions;
+            var pagedResult = await query.ToPagedResultAsync(filter);
+
+            return pagedResult;
         }
 
         public async Task<RegionInfo> Create(RegionInfo info)
         {
             if (info == null)
             {
-                throw new Exception("Region info is null.");
+                throw new AppException(AppErrorCode.ValidationError, "Region info is null.");
             }
 
             var exists = await _db.Regions.AnyAsync(r => r.Longitude == info.Longitude && r.Latitude == info.Latitude);
 
             if (exists)
             {
-                throw new Exception("Region already exists.");
+                throw new AppException(AppErrorCode.ValidationError, "Region already exists.");
             }
 
             var currentDate = DateTime.UtcNow;
@@ -100,12 +103,11 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
                                     Longitude = r.Longitude,
                                     CreatedDate = r.CreatedDate,
                                     UpdatedDate = r.UpdatedDate
-                                }
-                                    ).FirstOrDefaultAsync();
+                                }).FirstOrDefaultAsync();
 
             if (result == null)
             {
-                throw new Exception("Region not found.");
+                throw new AppException(AppErrorCode.NotFound, "Region not found.");
             }
 
             return result;
@@ -115,26 +117,26 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
         {
             if (info == null)
             {
-                throw new Exception("Region info is null.");
+                throw new AppException(AppErrorCode.ValidationError, "Region info is null.");
             }
 
             if (id <= 0)
             {
-                throw new Exception("Region id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "Region id is invalid.");
             }
 
             var regionEntity = await _db.Regions.FirstOrDefaultAsync(r => r.Id == id);
 
             if (regionEntity == null)
             {
-                throw new Exception("Region not found.");
+                throw new AppException(AppErrorCode.NotFound, "Region not found.");
             }
 
             var exists = await _db.Regions.AnyAsync(r => r.Longitude == info.Longitude && r.Latitude == info.Latitude && r.Id != id);
 
             if (exists)
             {
-                throw new Exception("Region already exists.");
+                throw new AppException(AppErrorCode.NotFound, "Region already exists.");
             }
 
             regionEntity.Name = info.Name;
@@ -158,7 +160,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
 
             if (result == null)
             {
-                throw new Exception("Region not found.");
+                throw new AppException(AppErrorCode.NotFound, "Region not found.");
             }
 
             return result;
@@ -168,14 +170,14 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
         {
             if (id <= 0)
             {
-                throw new Exception("Region id is invalid.");
+                throw new AppException(AppErrorCode.ValidationError, "Region id is invalid.");
             }
 
             var region = await _db.Regions.FirstOrDefaultAsync(r => r.Id == id);
 
             if (region == null)
             {
-                throw new Exception("Region not found.");
+                throw new AppException(AppErrorCode.NotFound, "Region not found.");
             }
 
             _db.Regions.Remove(region);

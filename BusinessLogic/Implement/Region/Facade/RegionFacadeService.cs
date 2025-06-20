@@ -1,6 +1,7 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.TransactionManager;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Region;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Facade
 {
@@ -17,16 +18,16 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Regio
             _transactionManager = transactionManager;
         }
 
-        public async Task<RegionInfo> GetById(long id)
+        public async Task<RegionInfo> GetEntityById(long id)
         {
             return await _transactionManager.DoworkWithNoTransaction(() =>
-            _regionService.GetById(id));
+            _regionService.GetEntityById(id));
         }
 
-        public Task<List<RegionInfo>> GetAll()
+        public Task<PagedResult<RegionInfo>> GetEntities(BaseFilter filter)
         {
             return _transactionManager.DoworkWithNoTransaction(() =>
-            _regionService.GetAll());
+            _regionService.GetEntities(filter));
         }
         public Task<RegionInfo> Create(RegionInfo info)
         {

@@ -1,9 +1,10 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Base;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Region;
 
 namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Region.Interface
 {
-    public interface IRegionFacadeService : IBaseService<RegionInfo>
+    public interface IRegionFacadeService : IBaseService<RegionInfo, BaseFilter>
     {
     }
 }

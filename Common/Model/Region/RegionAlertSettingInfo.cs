@@ -1,6 +1,6 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.Const;
 
-namespace Disaster_Prediction_And_Alert_System_API.Domain.Model
+namespace Disaster_Prediction_And_Alert_System_API.Common.Model.Region
 {
     public class RegionAlertSettingInfo
     {

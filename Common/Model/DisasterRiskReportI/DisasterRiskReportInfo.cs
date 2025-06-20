@@ -1,6 +1,7 @@
-﻿using Disaster_Prediction_And_Alert_System_API.Const;
+﻿using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+using Disaster_Prediction_And_Alert_System_API.Const;
 
-namespace Disaster_Prediction_And_Alert_System_API.Domain.Model
+namespace Disaster_Prediction_And_Alert_System_API.Common.Model.DisasterRiskReportI
 {
     public class DisasterRiskReportInfo : BaseInfo
     {

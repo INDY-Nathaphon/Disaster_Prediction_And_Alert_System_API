@@ -1,6 +1,7 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.TransactionManager;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterPredictionAndAlert.Interface;
-using Disaster_Prediction_And_Alert_System_API.Domain.Model;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.AlertSetting;
+using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
 
 public class AlertSettingFacadeService : IAlertSettingFacadeService
 {
@@ -15,16 +16,16 @@ public class AlertSettingFacadeService : IAlertSettingFacadeService
         _transactionManager = transactionManager;
     }
 
-    public async Task<AlertSettingInfo> GetById(long id)
+    public async Task<AlertSettingInfo> GetEntityById(long id)
     {
         return await _transactionManager.DoworkWithNoTransaction(() =>
-        _alertSettingService.GetById(id));
+        _alertSettingService.GetEntityById(id));
     }
 
-    public Task<List<AlertSettingInfo>> GetAll()
+    public Task<PagedResult<AlertSettingInfo>> GetEntities(BaseFilter filter)
     {
         return _transactionManager.DoworkWithNoTransaction(() =>
-        _alertSettingService.GetAll());
+        _alertSettingService.GetEntities(filter));
     }
     public Task<AlertSettingInfo> Create(AlertSettingInfo info)
     {
