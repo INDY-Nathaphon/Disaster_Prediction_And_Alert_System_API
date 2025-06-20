@@ -26,5 +26,16 @@ namespace Disaster_Prediction_And_Alert_System_API.Const
             [Description("Pending")]
             Pending = 3
         }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public enum RiskLevel
+        {
+            [Description("Low")]
+            Low = 1,
+            [Description("Medium")]
+            Medium = 2,
+            [Description("High")]
+            High = 3
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.ExternalApi;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCache;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
+using Disaster_Prediction_And_Alert_System_API.Common.Constant;
 using Disaster_Prediction_And_Alert_System_API.Common.Models.Region;
 using Disaster_Prediction_And_Alert_System_API.Common.Models.User;
 using Disaster_Prediction_And_Alert_System_API.Const;
@@ -63,7 +64,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
                     RegionId = item.RegionId,
                     DisasterType = item.DisasterType,
                     RiskScore = score,
-                    RiskLevel = riskLevel,
+                    RiskLevel = riskLevel.ToString(),
                     AlertTriggered = triggered,
                     CreatedDate = currentDate,
                     UpdatedDate = currentDate
@@ -95,7 +96,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
                             RegionId = item.RegionId,
                             UserId = user.Id,
                             SmsStatus = SmsStatus.Pending,
-                            RiskLevel = riskLevel,
+                            RiskLevel = riskLevel.ToString(),
                             DisasterType = item.DisasterType,
                             CreatedDate = currentDate,
                             UpdatedDate = currentDate
@@ -105,7 +106,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
                     }
 
                     var json = JsonSerializer.Serialize(reports);
-                    await _cache.SetAsync("latest-risk-report", json);
+                    await _cache.SetAsync(StringConstants.LatestRiskReport, json);
                 }
             }
 
@@ -116,7 +117,7 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
 
         public async Task SendDisasterRiskReport()
         {
-            var json = await _cache.GetAsync("latest-risk-report");
+            var json = await _cache.GetAsync(StringConstants.LatestRiskReport);
 
             if (string.IsNullOrEmpty(json))
             {
@@ -153,21 +154,21 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
             switch (type)
             {
                 case Enums.DisasterType.Flood:
-                    if (data.TryGetValue("rainfall", out var rainfall))
+                    if (data.TryGetValue(StringConstants.DisasterType.Rainfall, out var rainfall))
                     {
                         return Math.Min(rainfall * 2, 100);
                     }
                     break;
 
                 case Enums.DisasterType.Earthquake:
-                    if (data.TryGetValue("magnitude", out var magnitude))
+                    if (data.TryGetValue(StringConstants.DisasterType.Magnitude, out var magnitude))
                     {
                         return Math.Clamp((magnitude - 3.0) / 3.0 * 100, 0, 100);
                     }
                     break;
 
                 case Enums.DisasterType.Wildfire:
-                    if (data.TryGetValue("temperature", out var temp) && data.TryGetValue("humidity", out var humidity))
+                    if (data.TryGetValue(StringConstants.DisasterType.Temperature, out var temp) && data.TryGetValue(StringConstants.DisasterType.Humidity, out var humidity))
                     {
                         var score = (temp - humidity) * 2;
                         return Math.Clamp(score, 0, 100);
@@ -184,9 +185,9 @@ namespace Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.Disas
             return true;
         }
 
-        private string GetRiskLevel(double score)
+        private RiskLevel GetRiskLevel(double score)
         {
-            string riskLevel = score >= 80 ? "High" : score >= 50 ? "Medium" : "Low";
+            RiskLevel riskLevel = score >= 80 ? RiskLevel.High : score >= 50 ? RiskLevel.Medium : RiskLevel.Low;
             return riskLevel;
         }
 
