@@ -11,12 +11,10 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
     public class AlertSettingController : ControllerBase
     {
         private readonly IAlertSettingFacadeService _alertSettingFacadeService;
-        private readonly ILogger<UserController> _logger;
 
-        public AlertSettingController(ILogger<UserController> logger, IAlertSettingFacadeService alertSettingFacadeService)
+        public AlertSettingController(IAlertSettingFacadeService alertSettingFacadeService)
         {
             _alertSettingFacadeService = alertSettingFacadeService;
-            _logger = logger;
         }
 
         [HttpGet]

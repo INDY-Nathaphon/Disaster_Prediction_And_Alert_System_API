@@ -11,12 +11,10 @@ namespace Disaster_Prediction_And_Alert_System_API.Controllers
     public class RegionController : ControllerBase
     {
         private readonly IRegionFacadeService _regionFacadeService;
-        private readonly ILogger<RegionController> _logger;
 
-        public RegionController(ILogger<RegionController> logger, IRegionFacadeService regionFacadeService)
+        public RegionController(IRegionFacadeService regionFacadeService)
         {
             _regionFacadeService = regionFacadeService;
-            _logger = logger;
         }
 
         [HttpGet]

@@ -11,13 +11,11 @@ namespace Disaster_Prediction_And_Alert_System_API.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionMiddleware> _logger;
-        private readonly IWebHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IWebHostEnvironment env)
+        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
             _logger = logger;
-            _env = env;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -46,7 +44,7 @@ namespace Disaster_Prediction_And_Alert_System_API.Middleware
                 message = string.IsNullOrEmpty(appEx.Message)
                             ? ErrorHelper.GetMessage(errorCode)
                             : appEx.Message;
-                statusCode = appEx.StatusCode ?? (int)HttpStatusCode.InternalServerError;
+                statusCode = MapStatusCode((int)errorCode);
             }
             else
             {
@@ -68,6 +66,18 @@ namespace Disaster_Prediction_And_Alert_System_API.Middleware
 
             var result = JsonSerializer.Serialize(errorResponse);
             return context.Response.WriteAsync(result);
+        }
+
+        private static int MapStatusCode(int messageId)
+        {
+            return messageId switch
+            {
+                (int)AppErrorCode.NotFound => (int)HttpStatusCode.NotFound,
+                (int)AppErrorCode.ValidationError => (int)HttpStatusCode.BadRequest,
+                (int)AppErrorCode.Unauthorized => (int)HttpStatusCode.Unauthorized,
+                (int)AppErrorCode.Conflict => (int)HttpStatusCode.Conflict,
+                _ => (int)HttpStatusCode.InternalServerError,
+            };
         }
     }
 }
