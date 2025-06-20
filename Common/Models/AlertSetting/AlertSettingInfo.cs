@@ -1,7 +1,7 @@
-﻿using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+﻿using Disaster_Prediction_And_Alert_System_API.Common.Models.Base;
 using Disaster_Prediction_And_Alert_System_API.Const;
 
-namespace Disaster_Prediction_And_Alert_System_API.Common.Model.AlertSetting
+namespace Disaster_Prediction_And_Alert_System_API.Common.Models.AlertSetting
 {
     public class AlertSettingInfo : BaseInfo
     {

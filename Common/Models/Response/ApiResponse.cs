@@ -1,4 +1,4 @@
-﻿namespace Disaster_Prediction_And_Alert_System_API.Common.ApiResponse
+﻿namespace Disaster_Prediction_And_Alert_System_API.Common.Models.Response
 {
     public class ApiResponse<T>
     {

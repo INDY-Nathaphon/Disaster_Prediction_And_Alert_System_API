@@ -1,6 +1,6 @@
-﻿using Disaster_Prediction_And_Alert_System_API.Common.Model.Base;
+﻿using Disaster_Prediction_And_Alert_System_API.Common.Models.Base;
 
-namespace Disaster_Prediction_And_Alert_System_API.Common.ApiResponse
+namespace Disaster_Prediction_And_Alert_System_API.Common.Models.Response
 {
     public static class ApiResponseFactory
     {

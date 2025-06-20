@@ -1,7 +1,7 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.Common.Attribute;
 using Disaster_Prediction_And_Alert_System_API.Common.Constant;
 
-namespace Disaster_Prediction_And_Alert_System_API.Common.Helper
+namespace Disaster_Prediction_And_Alert_System_API.Common.Helpers
 {
     public static class ErrorHelper
     {
