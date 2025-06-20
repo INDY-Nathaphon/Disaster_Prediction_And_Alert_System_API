@@ -1,8 +1,8 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.ExternalApi;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.RedisCache;
 using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Implement.DisasterRiskReport.Interface;
-using Disaster_Prediction_And_Alert_System_API.Common.Model.Region;
-using Disaster_Prediction_And_Alert_System_API.Common.Model.User;
+using Disaster_Prediction_And_Alert_System_API.Common.Models.Region;
+using Disaster_Prediction_And_Alert_System_API.Common.Models.User;
 using Disaster_Prediction_And_Alert_System_API.Const;
 using Disaster_Prediction_And_Alert_System_API.Domain;
 using Microsoft.EntityFrameworkCore;
