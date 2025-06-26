@@ -1,5 +1,6 @@
 ﻿using Disaster_Prediction_And_Alert_System_API.BusinessLogic.Common.TransactionManager;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 #region UnitOfWork
 
@@ -13,6 +14,7 @@ public interface IUnitOfWork
 public class UnitOfWork : IUnitOfWork
 {
     private readonly DbContext _context;
+    private IDbContextTransaction? _transaction;
 
     public UnitOfWork(DbContext context)
     {
@@ -21,17 +23,33 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task BeginTransactionAsync()
     {
-        await _context.Database.BeginTransactionAsync();
+        // ถ้ามี transaction ค้างไว้ ให้ rollback ก่อนเปิดใหม่ (ป้องกันหลุด)
+        if (_transaction != null)
+        {
+            await _transaction.DisposeAsync();
+        }
+
+        _transaction = await _context.Database.BeginTransactionAsync();
     }
 
     public async Task CommitTransactionAsync()
     {
-        await _context.Database.CommitTransactionAsync();
+        if (_transaction != null)
+        {
+            await _transaction.CommitAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 
     public async Task RollbackTransactionAsync()
     {
-        await _context.Database.RollbackTransactionAsync();
+        if (_transaction != null)
+        {
+            await _transaction.RollbackAsync();
+            await _transaction.DisposeAsync();
+            _transaction = null;
+        }
     }
 }
 
